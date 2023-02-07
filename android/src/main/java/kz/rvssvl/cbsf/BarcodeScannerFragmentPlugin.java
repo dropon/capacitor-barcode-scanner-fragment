@@ -1,0 +1,11 @@
+package kz.rvssvl.cbsf;
+
+import android.util.Log;
+
+public class BarcodeScannerFragmentPlugin {
+
+    public String echo(String value) {
+        Log.i("Echo", value);
+        return value;
+    }
+}
