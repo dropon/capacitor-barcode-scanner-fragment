@@ -13,24 +13,54 @@ npx cap sync
 
 <docgen-index>
 
-* [`echo(...)`](#echo)
+* [`toggleScanner()`](#togglescanner)
+* [`startScanner()`](#startscanner)
+* [`stopScanner()`](#stopscanner)
+* [`setIsTorchEnabled(...)`](#setistorchenabled)
 
 </docgen-index>
 
 <docgen-api>
 <!--Update the source file JSDoc comments and rerun docgen to update the docs below-->
 
-### echo(...)
+### toggleScanner()
 
 ```typescript
-echo(options: { value: string; }) => Promise<{ value: string; }>
+toggleScanner() => Promise<void>
 ```
 
-| Param         | Type                            |
-| ------------- | ------------------------------- |
-| **`options`** | <code>{ value: string; }</code> |
+--------------------
 
-**Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
+
+### startScanner()
+
+```typescript
+startScanner() => Promise<void>
+```
+
+--------------------
+
+
+### stopScanner()
+
+```typescript
+stopScanner() => Promise<void>
+```
+
+--------------------
+
+
+### setIsTorchEnabled(...)
+
+```typescript
+setIsTorchEnabled(args: { enabled: boolean; }) => Promise<{ isEnabled: boolean; }>
+```
+
+| Param      | Type                               |
+| ---------- | ---------------------------------- |
+| **`args`** | <code>{ enabled: boolean; }</code> |
+
+**Returns:** <code>Promise&lt;{ isEnabled: boolean; }&gt;</code>
 
 --------------------
 

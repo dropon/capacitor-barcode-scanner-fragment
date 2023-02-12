@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="180dp"
+    android:layout_gravity="bottom|end"
+    android:layout_height="240dp"
+    tools:background="#aa3333">
+
+    <androidx.camera.view.PreviewView
+        android:id="@+id/pv_preview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <ImageView
+        android:id="@+id/iv_flashlight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:contentDescription="@null"
+        android:padding="4dp"
+        android:background="@android:color/holo_orange_dark"
+        android:src="@drawable/ic_flash_off" />
+
+</FrameLayout>

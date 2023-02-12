@@ -1,3 +1,6 @@
 export interface BarcodeScannerFragmentPluginPlugin {
-  echo(options: { value: string }): Promise<{ value: string }>;
+  toggleScanner(): Promise<void>;
+  startScanner(): Promise<void>;
+  stopScanner(): Promise<void>;
+  setIsTorchEnabled(args: {enabled: boolean}): Promise<{isEnabled: boolean}>;
 }

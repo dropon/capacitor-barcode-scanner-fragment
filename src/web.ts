@@ -3,8 +3,16 @@ import { WebPlugin } from '@capacitor/core';
 import type { BarcodeScannerFragmentPluginPlugin } from './definitions';
 
 export class BarcodeScannerFragmentPluginWeb extends WebPlugin implements BarcodeScannerFragmentPluginPlugin {
-  async echo(options: { value: string }): Promise<{ value: string }> {
-    console.log('ECHO', options);
-    return options;
+  async toggleScanner(): Promise<void> {
+    return
+  }
+  async startScanner(): Promise<void> {
+    return
+  }
+  async stopScanner(): Promise<void> {
+    return
+  }
+  async setIsTorchEnabled(): Promise<{isEnabled: boolean }> {
+    return { isEnabled: true }
   }
 }
