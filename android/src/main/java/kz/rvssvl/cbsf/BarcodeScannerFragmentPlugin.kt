@@ -104,7 +104,7 @@ class BarcodeScannerFragmentPlugin : CustomPlugin() {
         }
 
         override fun onBarcodeScannerPreviewClicked() {
-            TODO("Not yet implemented")
+
         }
 
         override fun onBarcodeScannerBarcodeDetected(result: List<String>) {
