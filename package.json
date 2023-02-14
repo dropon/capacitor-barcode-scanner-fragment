@@ -17,10 +17,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rvssvl/capacitor-barcode-scanner-fragment.git"
+    "url": "git+https://github.com/dropon/capacitor-barcode-scanner-fragment"
   },
   "bugs": {
-    "url": "https://github.com/rvssvl/capacitor-barcode-scanner-fragment/issues"
+    "url": "https://github.com/dropon/capacitor-barcode-scanner-fragment/issues"
   },
   "keywords": [
     "capacitor",
