@@ -1,6 +1,6 @@
 {
   "name": "capacitor-barcode-scanner-fragment",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "BarcodeScanner in Fragment",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",
