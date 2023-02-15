@@ -2,12 +2,15 @@ package kz.rvssvl.cbsf
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.view.View
+import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.getcapacitor.JSObject
 import com.getcapacitor.PluginCall
 import com.getcapacitor.PluginMethod
 import com.getcapacitor.annotation.CapacitorPlugin
+
 
 @CapacitorPlugin(name = "BarcodeScannerFragmentPlugin")
 class BarcodeScannerFragmentPlugin : CustomPlugin() {
@@ -39,7 +42,6 @@ class BarcodeScannerFragmentPlugin : CustomPlugin() {
             fragment = null
         }
         call.resolve()
-//        val parent = this.activity.applicationContext.resources.getIdentifier("root_frame_layout", "id", "io.ionic.starter")
     }
 
     @PluginMethod
@@ -55,8 +57,12 @@ class BarcodeScannerFragmentPlugin : CustomPlugin() {
             fragment = null
         }
         fragment = BarcodeScannerFragment(BarcodeScannerFragmentPluginCallback(this))
-        val parent = this.activity.applicationContext.resources.getIdentifier("root_frame_layout", "id", this.activity.applicationContext.packageName)
-        fragmentTransaction.add(parent, fragment!!, "barcode-scanner").commit()
+        val webView = activity.findViewById<View>(R.id.webview)
+        val parent = (webView.parent as ViewGroup)
+        if (parent.id<=0) {
+            parent.id = View.generateViewId()
+        }
+        fragmentTransaction.add(parent.id, fragment!!, "barcode-scanner").commit()
         call.resolve()
     }
 
