@@ -31,15 +31,10 @@ class BarcodeScannerFragmentPlugin : CustomPlugin() {
 
     @PluginMethod
     fun toggleScanner(call: PluginCall) {
-        val fragmentManager = activity.supportFragmentManager
-        val fragmentTransaction = fragmentManager.beginTransaction()
         if (fragment == null) {
-            fragment = BarcodeScannerFragment(BarcodeScannerFragmentPluginCallback(this))
-            val parent = this.activity.applicationContext.resources.getIdentifier("root_frame_layout", "id", this.activity.applicationContext.packageName)
-            fragmentTransaction.add(parent, fragment!!, "barcode-scanner").commit()
+            startScanner(call)
         } else {
-            fragmentTransaction.remove(fragment!!).commit()
-            fragment = null
+            stopScanner(call)
         }
         call.resolve()
     }
