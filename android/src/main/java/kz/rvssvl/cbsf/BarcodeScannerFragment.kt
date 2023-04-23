@@ -35,6 +35,7 @@ internal class BarcodeScannerFragment(var callback: Callback?) : Fragment() {
     private lateinit var mainExecutor: Executor
 
     private var previewView: PreviewView? = null
+    private var flashlightButton: ImageView? = null
 
     private var camera: Camera? = null
     private var barcodeScanner: BarcodeScannerRepository? = null
@@ -53,17 +54,9 @@ internal class BarcodeScannerFragment(var callback: Callback?) : Fragment() {
     }
 
     override fun onAttach(context: Context) {
-        Log.d("Rassul", "1")
         super.onAttach(context)
-        Log.d("Rassul", "2")
-//        callback = parentFragment as? Callback ?: context as Callback
-        Log.d("Rassul", "3")
         mainExecutor = ContextCompat.getMainExecutor(context)
         barcodeScanner = BarcodeScannerRepository(context)
-
-//        if (!isPermissionsGranted()) {
-//            callback!!.onBarcodeScannerCameraPermissionNotGranted()
-//        }
     }
 
     override fun onCreateView(
@@ -83,6 +76,25 @@ internal class BarcodeScannerFragment(var callback: Callback?) : Fragment() {
             this.setOnClickListener(object : DebouncingOnClickListener() {
                 override fun doClick(v: View?) {
                     callback?.onBarcodeScannerPreviewClicked()
+                }
+            })
+        }
+        flashlightButton = view.findViewById<ImageView>(R.id.iv_flashlight).also {
+            it.setOnClickListener(object : DebouncingOnClickListener() {
+                override fun doClick(v: View?) {
+                    val isEnabled = v!!.tag as? Boolean ?: false
+                    val enable = !isEnabled
+                    try {
+                        camera?.cameraControl?.enableTorch(enable)?.addListener({
+                            v.tag = enable
+                            flashlightButton?.setImageResource(
+                                if (enable) R.drawable.ic_flash_on else R.drawable.ic_flash_off
+                            )
+                        }, mainExecutor)
+                        Log.d(Tag, "Toggle to enable a torch!")
+                    } catch (e: Exception) {
+                        Log.e(Tag, "Failed to enable a torch!", e)
+                    }
                 }
             })
         }
@@ -107,8 +119,8 @@ internal class BarcodeScannerFragment(var callback: Callback?) : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        Log.d("rassul", "onDestroyView")
         previewView = null
+        flashlightButton = null
     }
 
     override fun onDetach() {
