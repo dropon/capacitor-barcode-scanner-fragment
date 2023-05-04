@@ -72,6 +72,13 @@ class BarcodeScannerFragmentPlugin : CustomPlugin() {
         call.resolve()
     }
 
+    @PluginMethod
+    fun isScanning(call: PluginCall) {
+        val ret = JSObject()
+        ret.put("isScanning", fragment != null)
+        call.resolve(ret)
+    }
+
     private fun requestPermission(): Boolean {
         if (ContextCompat.checkSelfPermission(
                 context,

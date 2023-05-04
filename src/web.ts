@@ -15,4 +15,7 @@ export class BarcodeScannerFragmentPluginWeb extends WebPlugin implements Barcod
   async setIsTorchEnabled(): Promise<{isEnabled: boolean }> {
     return { isEnabled: true }
   }
+  async isScanning(): Promise<{isScanning: boolean}> {
+    return { isScanning: false }
+  }
 }

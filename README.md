@@ -16,6 +16,7 @@ npx cap sync
 * [`toggleScanner()`](#togglescanner)
 * [`startScanner()`](#startscanner)
 * [`stopScanner()`](#stopscanner)
+* [`isScanning()`](#isscanning)
 * [`setIsTorchEnabled(...)`](#setistorchenabled)
 
 </docgen-index>
@@ -46,6 +47,17 @@ startScanner() => Promise<void>
 ```typescript
 stopScanner() => Promise<void>
 ```
+
+--------------------
+
+
+### isScanning()
+
+```typescript
+isScanning() => Promise<{ isScanning: boolean; }>
+```
+
+**Returns:** <code>Promise&lt;{ isScanning: boolean; }&gt;</code>
 
 --------------------
 
