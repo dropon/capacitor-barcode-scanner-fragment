@@ -4,17 +4,13 @@
     android:layout_width="150dp"
     android:layout_marginBottom="80dp"
     android:layout_gravity="bottom|end"
-    android:layout_height="200dp">
+    android:layout_height="200dp"
+    >
 
     <androidx.camera.view.PreviewView
         android:id="@+id/pv_preview"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-
-    <WebView
-    android:id="@+id/webview"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" />
 
 
     <ImageView

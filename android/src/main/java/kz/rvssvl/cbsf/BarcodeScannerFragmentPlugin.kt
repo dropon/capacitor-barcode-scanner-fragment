@@ -52,8 +52,7 @@ class BarcodeScannerFragmentPlugin : CustomPlugin() {
             fragment = null
         }
         fragment = BarcodeScannerFragment(BarcodeScannerFragmentPluginCallback(this))
-        val webView = activity.findViewById<View>(R.id.webview)
-        val parent = (webView.parent as ViewGroup)
+        val parent  = activity.findViewById<ViewGroup>(android.R.id.content) 
         if (parent.id<=0) {
             parent.id = View.generateViewId()
         }
