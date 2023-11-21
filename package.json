@@ -1,5 +1,5 @@
 {
-  "name": "capacitor-barcode-scanner-fragment",
+  "name": "@droponio/capacitor-barcode-scanner-fragment",
   "version": "1.0.9",
   "description": "BarcodeScanner in Fragment",
   "main": "dist/plugin.cjs.js",
@@ -13,7 +13,7 @@
     "ios/Plugin/",
     "CapacitorBarcodeScannerFragment.podspec"
   ],
-  "author": "Rassul Rakhimzhan",
+  "author": "dropon",
   "license": "MIT",
   "repository": {
     "type": "git",
