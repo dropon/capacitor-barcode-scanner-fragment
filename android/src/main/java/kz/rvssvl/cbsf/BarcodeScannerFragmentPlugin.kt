@@ -46,9 +46,8 @@ class BarcodeScannerFragmentPlugin : CustomPlugin() {
             return
         }
         val fragmentManager = activity.supportFragmentManager
-        val fragmentTransaction = fragmentManager.beginTransaction()
         if (fragment != null) {
-            fragmentTransaction.remove(fragment!!).commit()
+            fragmentManager.beginTransaction().remove(fragment!!).commit()
             fragment = null
         }
         fragment = BarcodeScannerFragment(BarcodeScannerFragmentPluginCallback(this))
@@ -56,7 +55,7 @@ class BarcodeScannerFragmentPlugin : CustomPlugin() {
         if (parent.id<=0) {
             parent.id = View.generateViewId()
         }
-        fragmentTransaction.add(parent.id, fragment!!, "barcode-scanner").commit()
+        fragmentManager.beginTransaction().add(parent.id, fragment!!, "barcode-scanner").commit()
         call.resolve()
     }
 
