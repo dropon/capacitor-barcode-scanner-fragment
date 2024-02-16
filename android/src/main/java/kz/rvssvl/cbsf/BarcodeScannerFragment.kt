@@ -28,6 +28,7 @@ import kotlin.math.min
  * Created by dmitrytavpeko on 03/19/22.
  */
 
+
 internal class BarcodeScannerFragment(var callback: Callback?) : Fragment() {
 
     private val imageAnalysisExecutor =
@@ -231,16 +232,16 @@ internal class BarcodeScannerFragment(var callback: Callback?) : Fragment() {
 
         private const val DesiredAspectRatio = AspectRatio.RATIO_4_3
         private val PreviewMinimumResolution =
-            Size(640, 480) // must have [DesiredAspectRatio] aspect ration.
+            Size(320, 480) // must have [DesiredAspectRatio] aspect ration.
         private val AnalyzerDesiredResolution =
-            Size(640, 480) // must have [DesiredAspectRatio] aspect ration.
+            Size(320, 480) // must have [DesiredAspectRatio] aspect ration.
 
         init {
             // We need to use the same aspect ration for preview and image analyzer use cases.
             when (DesiredAspectRatio) {
                 AspectRatio.RATIO_4_3 -> {
-                    check(AnalyzerDesiredResolution.height.toFloat() / AnalyzerDesiredResolution.width.toFloat() == 3f / 4f)
-                    check(PreviewMinimumResolution.height.toFloat() / PreviewMinimumResolution.width.toFloat() == 3f / 4f)
+                    check(AnalyzerDesiredResolution.width.toFloat() / AnalyzerDesiredResolution.height.toFloat() == 3f / 4f)
+                    check(PreviewMinimumResolution.widh.toFloat() / PreviewMinimumResolution.height.toFloat() == 3f / 4f)
                 }
                 else -> {
                     error("Unhandled aspect ration $DesiredAspectRatio.")
