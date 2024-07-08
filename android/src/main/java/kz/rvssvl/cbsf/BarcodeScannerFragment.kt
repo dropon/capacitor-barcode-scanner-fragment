@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
+import android.os.Handler
+import android.os.Looper
 import android.util.Size
 import android.view.LayoutInflater
 import android.view.View
@@ -196,46 +198,46 @@ internal class BarcodeScannerFragment(var callback: Callback?) : Fragment() {
         ImageAnalysis.Analyzer {
 
         private val Tag = "BarcodeAnalyzer"
+        private var isScanning = false
+        private val handler = Handler(Looper.getMainLooper())
+    }
 
+    override fun analyze(image: ImageProxy) {
+        if (isScanning) {
+            image.close()
+            return
+        }
 
-        // Executed on a background thread
-        override fun analyze(image: ImageProxy) {
-            if (isScanning) {
-                image.close()
-                return
-            }
-
-            val androidImage = image.image ?: return
-            runBlocking(CoroutineExceptionHandler { _, throwable ->
-                Log.e(Tag, "Failed to process new image.", throwable)
-                callback?.onBarcodeScannerErrorOccurred()
-            }) {
-                barcodeScanner?.detectBarcode(
-                    BarcodeScannerRepository.Input(
-                        androidImage,
-                        image.imageInfo.rotationDegrees
-                    )
+        val androidImage = image.image ?: return
+        runBlocking(CoroutineExceptionHandler { _, throwable ->
+            Log.e(Tag, "Failed to process new image.", throwable)
+            callback?.onBarcodeScannerErrorOccurred()
+        }) {
+            barcodeScanner?.detectBarcode(
+                BarcodeScannerRepository.Input(
+                    androidImage,
+                    image.imageInfo.rotationDegrees
                 )
-                    ?.takeIf { it.isNotEmpty() }
-                    ?.let { rawResults ->
-                        mainExecutor.execute {
-                            callback?.onBarcodeScannerBarcodeDetected(rawResults.mapNotNull { it.rawValue })
-                        }
+            )
+            ?.takeIf { it.isNotEmpty() }
+            ?.let { rawResults ->
+                mainExecutor.execute {
+                    callback?.onBarcodeScannerBarcodeDetected(rawResults.mapNotNull { it.rawValue })
+                }
 
-                        isScanning = true
-                        mainExecutor.execute {
-                            Thread.sleep(SCAN_DELAY)
-                            isScanning = false
-                        }
-                    }
-            }
-            try {
-                image.close()
-            } catch (e: Exception) {
-                Log.e(Tag, "Failed to close image!", e)
+                isScanning = true
+                handler.postDelayed({
+                    isScanning = false
+                }, 1000L)
             }
         }
+        try {
+            image.close()
+        } catch (e: Exception) {
+            Log.e(Tag, "Failed to close image!", e)
+        }
     }
+
 
     companion object {
         private const val Tag = "BarcodeScannerFragment"
@@ -258,10 +260,6 @@ internal class BarcodeScannerFragment(var callback: Callback?) : Fragment() {
                 }
             }
         }
-    }
-
-    companion object {
-        private const val SCAN_DELAY = 1000L // 1 second delay
     }
 }
 
