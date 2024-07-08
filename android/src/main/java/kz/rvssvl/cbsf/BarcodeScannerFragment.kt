@@ -200,6 +200,11 @@ internal class BarcodeScannerFragment(var callback: Callback?) : Fragment() {
 
         // Executed on a background thread
         override fun analyze(image: ImageProxy) {
+            if (isScanning) {
+                image.close()
+                return
+            }
+
             val androidImage = image.image ?: return
             runBlocking(CoroutineExceptionHandler { _, throwable ->
                 Log.e(Tag, "Failed to process new image.", throwable)
@@ -215,6 +220,12 @@ internal class BarcodeScannerFragment(var callback: Callback?) : Fragment() {
                     ?.let { rawResults ->
                         mainExecutor.execute {
                             callback?.onBarcodeScannerBarcodeDetected(rawResults.mapNotNull { it.rawValue })
+                        }
+
+                        isScanning = true
+                        mainExecutor.execute {
+                            Thread.sleep(SCAN_DELAY)
+                            isScanning = false
                         }
                     }
             }
@@ -247,6 +258,10 @@ internal class BarcodeScannerFragment(var callback: Callback?) : Fragment() {
                 }
             }
         }
+    }
+
+    companion object {
+        private const val SCAN_DELAY = 1000L // 1 second delay
     }
 }
 
