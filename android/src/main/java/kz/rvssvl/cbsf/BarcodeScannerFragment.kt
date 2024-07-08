@@ -24,6 +24,9 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.system.measureTimeMillis
+import android.os.Handler
+import android.os.Looper
+import java.util.concurrent.TimeUnit
 
 /**
  * Created by dmitrytavpeko on 03/19/22.
@@ -193,24 +196,41 @@ internal class BarcodeScannerFragment(var callback: Callback?) : Fragment() {
     }
 
 
-    private inner class BarcodeAnalyzer(private val mainExecutor: Executor) :
-        ImageAnalysis.Analyzer {
-
+    private inner class BarcodeAnalyzer(private val mainExecutor: Executor) : ImageAnalysis.Analyzer {
         private val Tag = "BarcodeAnalyzer"
         private var lastAnalyzedTimestamp = 0L
-        private val delayBetweenScans = 2000L // 2 seconds
+        private val delayBetweenScans = TimeUnit.SECONDS.toMillis(2) // 2 seconds
+        private val mainHandler = Handler(Looper.getMainLooper())
+        private var isProcessing = false // Flag to indicate if the handler is currently processing
 
         // Executed on a background thread
         override fun analyze(image: ImageProxy) {
-            val androidImage = image.image ?: return
-
             val currentTimestamp = System.currentTimeMillis()
+            
+            if (isProcessing) {
+                image.close()
+                return
+            }
+
             if (currentTimestamp - lastAnalyzedTimestamp < delayBetweenScans) {
                 image.close()
                 return
             }
 
+            isProcessing = true
             lastAnalyzedTimestamp = currentTimestamp
+
+            // Directly analyze the first image
+            analyzeImage(image)
+            
+            // Schedule the handler for subsequent analyses
+            mainHandler.postDelayed({
+                isProcessing = false
+            }, delayBetweenScans)
+        }
+
+        private fun analyzeImage(image: ImageProxy) {
+            val androidImage = image.image ?: return
 
             runBlocking(CoroutineExceptionHandler { _, throwable ->
                 Log.e(Tag, "Failed to process new image.", throwable)
