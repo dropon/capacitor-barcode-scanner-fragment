@@ -98,6 +98,9 @@ internal class BarcodeScannerFragment(var callback: Callback?) : Fragment() {
                 }
             })
         }
+
+        // Add touch listener for dragging
+        view.setOnTouchListener(DragTouchListener())
     }
 
     override fun onStart() {
@@ -190,6 +193,46 @@ internal class BarcodeScannerFragment(var callback: Callback?) : Fragment() {
         fun onBarcodeScannerBarcodeDetected(result: List<String>)
         fun onBarcodeScannerErrorOccurred()
     }
+
+    private inner class DragTouchListener : View.OnTouchListener {
+        private var downRawX: Float = 0f
+        private var downRawY: Float = 0f
+        private var dX: Float = 0f
+        private var dY: Float = 0f
+
+        override fun onTouch(view: View, event: MotionEvent): Boolean {
+            val parent = view.parent as View
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    downRawX = event.rawX
+                    downRawY = event.rawY
+                    dX = view.x - downRawX
+                    dY = view.y - downRawY
+                    return true // Consumed
+                }
+                MotionEvent.ACTION_MOVE -> {
+                    val newX = event.rawX + dX
+                    val newY = event.rawY + dY
+
+                    // Check if the view is within the bounds of the parent
+                    val parentWidth = parent.width
+                    val parentHeight = parent.height
+                    val viewWidth = view.width
+                    val viewHeight = view.height
+
+                    val clampedX = max(0f, min(newX, parentWidth - viewWidth.toFloat()))
+                    val clampedY = max(0f, min(newY, parentHeight - viewHeight.toFloat()))
+
+                    view.x = clampedX
+                    view.y = clampedY
+
+                    return true // Consumed
+                }
+                else -> return false // Not consumed
+            }
+        }
+    }
+
 
 
     private inner class BarcodeAnalyzer(private val mainExecutor: Executor) :
