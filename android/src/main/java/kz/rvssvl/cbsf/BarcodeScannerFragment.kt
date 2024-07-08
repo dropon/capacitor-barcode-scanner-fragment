@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.util.Log
 import android.util.Size
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -40,7 +41,6 @@ internal class BarcodeScannerFragment(var callback: Callback?) : Fragment() {
     private var camera: Camera? = null
     private var barcodeScanner: BarcodeScannerRepository? = null
 
-
     //region inherited
 
     public fun setIsTorchEnabled(enabled: Boolean): Boolean {
@@ -72,6 +72,7 @@ internal class BarcodeScannerFragment(var callback: Callback?) : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         previewView = view.findViewById<PreviewView?>(R.id.pv_preview).apply {
             this.setOnClickListener(object : DebouncingOnClickListener() {
                 override fun doClick(v: View?) {
@@ -233,13 +234,10 @@ internal class BarcodeScannerFragment(var callback: Callback?) : Fragment() {
         }
     }
 
-
-
     private inner class BarcodeAnalyzer(private val mainExecutor: Executor) :
         ImageAnalysis.Analyzer {
 
         private val Tag = "BarcodeAnalyzer"
-
 
         // Executed on a background thread
         override fun analyze(image: ImageProxy) {
@@ -274,29 +272,27 @@ internal class BarcodeScannerFragment(var callback: Callback?) : Fragment() {
 
         private const val DesiredAspectRatio = AspectRatio.RATIO_4_3
         private val PreviewMinimumResolution =
-            Size(640, 480) // must have [DesiredAspectRatio] aspect ration.
+            Size(640, 480) // must have [DesiredAspectRatio] aspect ratio.
         private val AnalyzerDesiredResolution =
-            Size(640, 480) // must have [DesiredAspectRatio] aspect ration.
+            Size(640, 480) // must have [DesiredAspectRatio] aspect ratio.
 
         init {
-            // We need to use the same aspect ration for preview and image analyzer use cases.
+            // We need to use the same aspect ratio for preview and image analyzer use cases.
             when (DesiredAspectRatio) {
                 AspectRatio.RATIO_4_3 -> {
                     check(AnalyzerDesiredResolution.height.toFloat() / AnalyzerDesiredResolution.width.toFloat() == 3f / 4f)
                     check(PreviewMinimumResolution.height.toFloat() / PreviewMinimumResolution.width.toFloat() == 3f / 4f)
                 }
                 else -> {
-                    error("Unhandled aspect ration $DesiredAspectRatio.")
+                    error("Unhandled aspect ratio $DesiredAspectRatio.")
                 }
             }
         }
     }
 }
 
-
 private const val Ratio_4_3_Value = 4.0 / 3.0
 private const val Ratio_16_9_Value = 16.0 / 9.0
-
 
 /**
  *  Detecting the most suitable ratio for dimensions provided in @params by counting absolute
