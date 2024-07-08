@@ -23,6 +23,7 @@ import java.util.concurrent.Executors
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.system.measureTimeMillis
 
 /**
  * Created by dmitrytavpeko on 03/19/22.
@@ -196,11 +197,21 @@ internal class BarcodeScannerFragment(var callback: Callback?) : Fragment() {
         ImageAnalysis.Analyzer {
 
         private val Tag = "BarcodeAnalyzer"
-
+        private var lastAnalyzedTimestamp = 0L
+        private val delayBetweenScans = 2000L // 2 seconds
 
         // Executed on a background thread
         override fun analyze(image: ImageProxy) {
             val androidImage = image.image ?: return
+
+            val currentTimestamp = System.currentTimeMillis()
+            if (currentTimestamp - lastAnalyzedTimestamp < delayBetweenScans) {
+                image.close()
+                return
+            }
+
+            lastAnalyzedTimestamp = currentTimestamp
+
             runBlocking(CoroutineExceptionHandler { _, throwable ->
                 Log.e(Tag, "Failed to process new image.", throwable)
                 callback?.onBarcodeScannerErrorOccurred()
