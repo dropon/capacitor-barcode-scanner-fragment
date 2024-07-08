@@ -195,12 +195,12 @@ internal class BarcodeScannerFragment(var callback: Callback?) : Fragment() {
 
 
     private inner class BarcodeAnalyzer(private val mainExecutor: Executor) :
-        ImageAnalysis.Analyzer {
-
-        private val Tag = "BarcodeAnalyzer"
         private var isScanning = false
         private val handler = Handler(Looper.getMainLooper())
-    }
+        
+        ImageAnalysis.Analyzer {
+            private val Tag = "BarcodeAnalyzer"
+        }
 
     override fun analyze(image: ImageProxy) {
         if (isScanning) {
