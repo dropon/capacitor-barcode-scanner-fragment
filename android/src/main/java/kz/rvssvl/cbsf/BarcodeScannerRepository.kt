@@ -11,7 +11,7 @@ import kotlinx.coroutines.tasks.await
 class BarcodeScannerRepository(context: Context) {
 
     private val options = BarcodeScannerOptions.Builder()
-            .setBarcodeFormats(Barcode.FORMAT_CODE_128)
+            .setBarcodeFormats(Barcode.FORMAT_CODE_128, Barcode.FORMAT_QR_CODE)
             .build()
 
     private val detector = BarcodeScanning.getClient(options)
