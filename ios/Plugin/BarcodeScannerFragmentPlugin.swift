@@ -49,55 +49,57 @@ public class BarcodeScannerFragmentPlugin: CAPPlugin, AVCaptureMetadataOutputObj
     }
     
     private func setupScanner() {
-    print("⚡️ BarcodeScannerFragmentPlugin: setupScanner() called")
+        print("⚡️ BarcodeScannerFragmentPlugin: setupScanner() called")
 
-    guard let device = AVCaptureDevice.default(for: .video) else {
-        print("❌ No camera device found!")
-        notifyListeners("onBarcodeScannerErrorOccurred", data: ["message": "No camera device found"])
-        return
-    }
-
-    do {
-        print("✅ Camera device found, setting up input")
-        let input = try AVCaptureDeviceInput(device: device)
-        captureSession = AVCaptureSession()
-        captureSession?.addInput(input)
-
-        let output = AVCaptureMetadataOutput()
-        captureSession?.addOutput(output)
-        output.setMetadataObjectsDelegate(self, queue: DispatchQueue.main)
-        output.metadataObjectTypes = [.qr, .ean8, .ean13, .code128, .dataMatrix]
-
-        previewLayer = AVCaptureVideoPreviewLayer(session: captureSession!)
-        previewLayer?.videoGravity = .resizeAspectFill
-
-        if let webView = bridge?.webView {
-            print("✅ WebView found, adding preview layer")
-
-            DispatchQueue.main.async {
-                self.previewLayer?.frame = webView.bounds
-                webView.layer.insertSublayer(self.previewLayer!, at: 0)
-
-                // 🔥 Force a layout update in case WebView hasn't fully loaded
-                webView.setNeedsLayout()
-                webView.layoutIfNeeded()
-            }
-
-        } else {
-            print("❌ WebView is nil!")
-            notifyListeners("onBarcodeScannerErrorOccurred", data: ["message": "WebView is nil"])
+        guard let device = AVCaptureDevice.default(for: .video) else {
+            print("❌ No camera device found!")
+            notifyListeners("onBarcodeScannerErrorOccurred", data: ["message": "No camera device found"])
             return
         }
 
-        captureSession?.startRunning()
-        print("✅ Camera session started successfully!")
+        do {
+            print("✅ Camera device found, setting up input")
+            let input = try AVCaptureDeviceInput(device: device)
+            captureSession = AVCaptureSession()
+            captureSession?.addInput(input)
 
-    } catch {
-        print("❌ Failed to set up camera: \(error.localizedDescription)")
-        notifyListeners("onBarcodeScannerErrorOccurred", data: ["message": error.localizedDescription])
+            let output = AVCaptureMetadataOutput()
+            captureSession?.addOutput(output)
+            output.setMetadataObjectsDelegate(self, queue: DispatchQueue.main)
+            output.metadataObjectTypes = [.qr, .ean8, .ean13, .code128, .dataMatrix]
+
+            previewLayer = AVCaptureVideoPreviewLayer(session: captureSession!)
+            previewLayer?.videoGravity = .resizeAspectFill
+
+            if let webView = bridge?.webView {
+                print("✅ WebView found, adding preview layer")
+
+                DispatchQueue.main.async {
+                    self.previewLayer?.frame = webView.bounds
+                    webView.layer.insertSublayer(self.previewLayer!, at: 0)
+                    webView.setNeedsLayout()
+                    webView.layoutIfNeeded()
+                }
+            } else {
+                print("❌ WebView is nil!")
+                notifyListeners("onBarcodeScannerErrorOccurred", data: ["message": "WebView is nil"])
+                return
+            }
+
+            // 🚀 Run capture session in a background thread
+            DispatchQueue.global(qos: .userInitiated).async {
+                print("⚡️ Starting Camera Session on Background Thread...")
+                self.captureSession?.startRunning()
+                print("✅ Camera session started successfully!")
+            }
+
+        } catch {
+            print("❌ Failed to set up camera: \(error.localizedDescription)")
+            notifyListeners("onBarcodeScannerErrorOccurred", data: ["message": error.localizedDescription])
+        }
     }
-}
 
+    
     
     public func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
         guard let metadataObj = metadataObjects.first as? AVMetadataMachineReadableCodeObject, let stringValue = metadataObj.stringValue else {
