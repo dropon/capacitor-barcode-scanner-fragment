@@ -48,7 +48,7 @@ public class BarcodeScannerFragmentPlugin: CAPPlugin, AVCaptureMetadataOutputObj
         }
     }
 
-    private func setupScanner() {
+     private func setupScanner() {
         print("⚡️ BarcodeScannerFragmentPlugin: setupScanner() called")
 
         guard let device = AVCaptureDevice.default(for: .video) else {
@@ -75,21 +75,26 @@ public class BarcodeScannerFragmentPlugin: CAPPlugin, AVCaptureMetadataOutputObj
                 if let window = UIApplication.shared.windows.first {
                     print("✅ Main window found, adding preview layer")
 
-                    // 🔥 Ensure WebView is transparent
+                    // 🔥 Make WebView transparent
                     self.bridge?.webView?.backgroundColor = UIColor.clear
                     self.bridge?.webView?.isOpaque = false
 
-                    // 🔥 Remove existing preview layers to prevent duplication
+                    // Remove old layers
                     window.layer.sublayers?.forEach { layer in
                         if layer is AVCaptureVideoPreviewLayer {
                             layer.removeFromSuperlayer()
                         }
                     }
 
-                    // 🚀 Set frame size correctly
-                    self.previewLayer?.frame = window.bounds
+                    // 🔥 Set size: approximately 1/6th of the screen
+                    let width = window.bounds.width / 3
+                    let height = window.bounds.height / 3
+                    let xPos = window.bounds.width - width - 10 // 10px padding from the right
+                    let yPos = window.bounds.height - height - 10 // 10px padding from the bottom
 
-                    // 🚀 Add preview layer to the topmost level
+                    self.previewLayer?.frame = CGRect(x: xPos, y: yPos, width: width, height: height)
+
+                    // 🚀 Add preview layer
                     window.layer.addSublayer(self.previewLayer!)
                     self.previewLayer?.zPosition = CGFloat.greatestFiniteMagnitude
                     self.previewLayer?.isHidden = false
@@ -100,9 +105,8 @@ public class BarcodeScannerFragmentPlugin: CAPPlugin, AVCaptureMetadataOutputObj
                     window.layoutIfNeeded()
 
                     // Debugging
-                    print("✅ Preview Layer Added to Window")
-                    print("🟡 Preview Layer Frame: \(String(describing: self.previewLayer?.frame))")
-                    print("🟡 Window Bounds: \(window.bounds)")
+                    print("✅ Preview Layer Positioned at Bottom-Right")
+                    print("🟡 Preview Layer Frame: \(self.previewLayer!.frame)")
                 } else {
                     print("❌ Main window is nil!")
                     self.notifyListeners("onBarcodeScannerErrorOccurred", data: ["message": "Main window is nil"])
@@ -119,10 +123,10 @@ public class BarcodeScannerFragmentPlugin: CAPPlugin, AVCaptureMetadataOutputObj
 
         } catch {
             print("❌ Failed to set up camera: \(error.localizedDescription)")
-            notifyListeners("onBarcodeScannerErrorOccurred", data: ["message": error.localizedDescription])
+            notifyListeners("onBarcodeScannerErrorOccurred", data: ["message": error.localizedDescription"])
         }
     }
-
+   
 
     public func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
         guard let metadataObj = metadataObjects.first as? AVMetadataMachineReadableCodeObject, let stringValue = metadataObj.stringValue else {
