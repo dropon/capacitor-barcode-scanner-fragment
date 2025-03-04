@@ -75,24 +75,34 @@ public class BarcodeScannerFragmentPlugin: CAPPlugin, AVCaptureMetadataOutputObj
                 if let window = UIApplication.shared.windows.first {
                     print("✅ Main window found, adding preview layer")
 
-                    // 🔥 Make sure the preview layer is on top
-                    self.previewLayer?.frame = window.bounds
+                    // 🔥 Ensure WebView is transparent
+                    self.bridge?.webView?.backgroundColor = UIColor.clear
+                    self.bridge?.webView?.isOpaque = false
 
-                    // Remove existing layers to prevent duplicates
+                    // 🔥 Remove existing preview layers to prevent duplication
                     window.layer.sublayers?.forEach { layer in
                         if layer is AVCaptureVideoPreviewLayer {
                             layer.removeFromSuperlayer()
                         }
                     }
 
-                    // 🚀 Add preview layer directly to the window
-                    window.layer.insertSublayer(self.previewLayer!, at: 0)
+                    // 🚀 Set frame size correctly
+                    self.previewLayer?.frame = window.bounds
 
-                    // 🔥 Force a UI update
+                    // 🚀 Add preview layer to the topmost level
+                    window.layer.addSublayer(self.previewLayer!)
+                    self.previewLayer?.zPosition = CGFloat.greatestFiniteMagnitude
+                    self.previewLayer?.isHidden = false
+                    self.previewLayer?.opacity = 1.0
+
+                    // 🔥 Force layout update
                     window.setNeedsLayout()
                     window.layoutIfNeeded()
 
+                    // Debugging
                     print("✅ Preview Layer Added to Window")
+                    print("🟡 Preview Layer Frame: \(String(describing: self.previewLayer?.frame))")
+                    print("🟡 Window Bounds: \(window.bounds)")
                 } else {
                     print("❌ Main window is nil!")
                     self.notifyListeners("onBarcodeScannerErrorOccurred", data: ["message": "Main window is nil"])
@@ -112,7 +122,8 @@ public class BarcodeScannerFragmentPlugin: CAPPlugin, AVCaptureMetadataOutputObj
             notifyListeners("onBarcodeScannerErrorOccurred", data: ["message": error.localizedDescription])
         }
     }
-    
+
+
     public func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
         guard let metadataObj = metadataObjects.first as? AVMetadataMachineReadableCodeObject, let stringValue = metadataObj.stringValue else {
             return
