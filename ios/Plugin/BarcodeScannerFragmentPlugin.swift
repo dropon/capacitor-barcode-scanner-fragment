@@ -123,7 +123,7 @@ public class BarcodeScannerFragmentPlugin: CAPPlugin, AVCaptureMetadataOutputObj
 
         } catch {
             print("❌ Failed to set up camera: \(error.localizedDescription)")
-            notifyListeners("onBarcodeScannerErrorOccurred", data: ["message": error.localizedDescription"])
+            notifyListeners("onBarcodeScannerErrorOccurred", data: ["message": error.localizedDescription])
         }
     }
    
