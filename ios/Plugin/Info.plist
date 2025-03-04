@@ -20,5 +20,7 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>NSPrincipalClass</key>
 	<string></string>
+	<key>NSCameraUsageDescription</key>
+    <string>We need access to your camera for barcode scanning.</string>
 </dict>
 </plist>

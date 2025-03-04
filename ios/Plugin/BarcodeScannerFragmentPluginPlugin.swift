@@ -1,18 +1,24 @@
-import Foundation
 import Capacitor
 
-/**
- * Please read the Capacitor iOS Plugin Development Guide
- * here: https://capacitorjs.com/docs/plugins/ios
- */
 @objc(BarcodeScannerFragmentPluginPlugin)
 public class BarcodeScannerFragmentPluginPlugin: CAPPlugin {
+    
     private let implementation = BarcodeScannerFragmentPlugin()
 
-    @objc func echo(_ call: CAPPluginCall) {
-        let value = call.getString("value") ?? ""
-        call.resolve([
-            "value": implementation.echo(value)
-        ])
+    @objc func startScanner(_ call: CAPPluginCall) {
+        implementation.startScanner(call)
+    }
+    
+    @objc func stopScanner(_ call: CAPPluginCall) {
+        implementation.stopScanner(call)
+    }
+    
+    @objc func isScanning(_ call: CAPPluginCall) {
+        implementation.isScanning(call)
+    }
+
+    @objc func setIsTorchEnabled(_ call: CAPPluginCall) {
+        implementation.setIsTorchEnabled(call)
     }
 }
+
