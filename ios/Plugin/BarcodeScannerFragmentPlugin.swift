@@ -48,85 +48,91 @@ public class BarcodeScannerFragmentPlugin: CAPPlugin, AVCaptureMetadataOutputObj
         }
     }
 
-     private func setupScanner() {
-        print("⚡️ BarcodeScannerFragmentPlugin: setupScanner() called")
 
-        guard let device = AVCaptureDevice.default(for: .video) else {
-            print("❌ No camera device found!")
-            notifyListeners("onBarcodeScannerErrorOccurred", data: ["message": "No camera device found"])
-            return
-        }
+private func setupScanner() {
+    print("⚡️ BarcodeScannerFragmentPlugin: setupScanner() called")
 
-        do {
-            print("✅ Camera device found, setting up input")
-            let input = try AVCaptureDeviceInput(device: device)
-            captureSession = AVCaptureSession()
-            captureSession?.addInput(input)
-
-            let output = AVCaptureMetadataOutput()
-            captureSession?.addOutput(output)
-            output.setMetadataObjectsDelegate(self, queue: DispatchQueue.main)
-            output.metadataObjectTypes = [.qr, .ean8, .ean13, .code128, .dataMatrix]
-
-            previewLayer = AVCaptureVideoPreviewLayer(session: captureSession!)
-            previewLayer?.videoGravity = .resizeAspectFill
-
-            DispatchQueue.main.async {
-                if let window = UIApplication.shared.windows.first {
-                    print("✅ Main window found, adding preview layer")
-
-                    // 🔥 Make WebView transparent
-                    self.bridge?.webView?.backgroundColor = UIColor.clear
-                    self.bridge?.webView?.isOpaque = false
-
-                    // Remove old layers
-                    window.layer.sublayers?.forEach { layer in
-                        if layer is AVCaptureVideoPreviewLayer {
-                            layer.removeFromSuperlayer()
-                        }
-                    }
-
-                    // 🔥 Set size: approximately 1/6th of the screen
-                    let width = window.bounds.width / 3
-                    let height = window.bounds.height / 3
-                    let xPos = window.bounds.width - width - 10 // 10px padding from the right
-                    let yPos = window.bounds.height - height - 10 // 10px padding from the bottom
-
-                    self.previewLayer?.frame = CGRect(x: xPos, y: yPos, width: width, height: height)
-
-                    // 🚀 Add preview layer
-                    window.layer.addSublayer(self.previewLayer!)
-                    self.previewLayer?.zPosition = CGFloat.greatestFiniteMagnitude
-                    self.previewLayer?.isHidden = false
-                    self.previewLayer?.opacity = 1.0
-
-                    // 🔥 Force layout update
-                    window.setNeedsLayout()
-                    window.layoutIfNeeded()
-
-                    // Debugging
-                    print("✅ Preview Layer Positioned at Bottom-Right")
-                    print("🟡 Preview Layer Frame: \(self.previewLayer!.frame)")
-                } else {
-                    print("❌ Main window is nil!")
-                    self.notifyListeners("onBarcodeScannerErrorOccurred", data: ["message": "Main window is nil"])
-                    return
-                }
-            }
-
-            // 🚀 Start capture session in a background thread
-            DispatchQueue.global(qos: .userInitiated).async {
-                print("⚡️ Starting Camera Session on Background Thread...")
-                self.captureSession?.startRunning()
-                print("✅ Camera session started successfully!")
-            }
-
-        } catch {
-            print("❌ Failed to set up camera: \(error.localizedDescription)")
-            notifyListeners("onBarcodeScannerErrorOccurred", data: ["message": error.localizedDescription])
-        }
+    guard let device = AVCaptureDevice.default(for: .video) else {
+        print("❌ No camera device found!")
+        notifyListeners("onBarcodeScannerErrorOccurred", data: ["message": "No camera device found"])
+        return
     }
-   
+
+    do {
+        print("✅ Camera device found, setting up input")
+        let input = try AVCaptureDeviceInput(device: device)
+        captureSession = AVCaptureSession()
+        captureSession?.addInput(input)
+
+        let output = AVCaptureMetadataOutput()
+        captureSession?.addOutput(output)
+        output.setMetadataObjectsDelegate(self, queue: DispatchQueue.main)
+        output.metadataObjectTypes = [.qr, .ean8, .ean13, .code128, .dataMatrix]
+
+        previewLayer = AVCaptureVideoPreviewLayer(session: captureSession!)
+        previewLayer?.videoGravity = .resizeAspectFill
+
+        DispatchQueue.main.async {
+            if let window = UIApplication.shared.windows.first {
+                print("✅ Main window found, adding preview layer")
+
+                // 🔥 Ensure WebView is transparent
+                self.bridge?.webView?.backgroundColor = UIColor.clear
+                self.bridge?.webView?.isOpaque = false
+
+                // 🔥 Remove existing preview layers to prevent duplication
+                window.layer.sublayers?.forEach { layer in
+                    if layer is AVCaptureVideoPreviewLayer {
+                        layer.removeFromSuperlayer()
+                    }
+                }
+
+                // 🔥 Set size: approximately 1/6th of the screen
+                let screenWidth = window.bounds.width
+                let screenHeight = window.bounds.height
+                let previewWidth = screenWidth / 3
+                let previewHeight = screenHeight / 3
+                let xPos = screenWidth - previewWidth - 10 // 10px padding from right
+                let yPos = screenHeight - previewHeight - 10 // 10px padding from bottom
+
+                self.previewLayer?.frame = CGRect(x: xPos, y: yPos, width: previewWidth, height: previewHeight)
+
+                // 🚀 Add preview layer
+                window.layer.addSublayer(self.previewLayer!)
+                self.previewLayer?.zPosition = CGFloat.greatestFiniteMagnitude
+                self.previewLayer?.isHidden = false
+                self.previewLayer?.opacity = 1.0
+
+                // 🔥 Force layout update
+                window.setNeedsLayout()
+                window.layoutIfNeeded()
+
+                // ✅ Debugging logs
+                if let frame = self.previewLayer?.frame {
+                    print("✅ Preview Layer Positioned at Bottom-Right")
+                    print("🟡 Preview Layer Frame: \(frame.origin.x), \(frame.origin.y), \(frame.width)x\(frame.height)")
+                } else {
+                    print("❌ Failed to set preview layer frame")
+                }
+            } else {
+                print("❌ Main window is nil!")
+                self.notifyListeners("onBarcodeScannerErrorOccurred", data: ["message": "Main window is nil"])
+                return
+            }
+        }
+
+        // 🚀 Start capture session in a background thread
+        DispatchQueue.global(qos: .userInitiated).async {
+            print("⚡️ Starting Camera Session on Background Thread...")
+            self.captureSession?.startRunning()
+            print("✅ Camera session started successfully!")
+        }
+
+    } catch {
+        print("❌ Failed to set up camera: \(error.localizedDescription)")
+        notifyListeners("onBarcodeScannerErrorOccurred", data: ["message": error.localizedDescription])
+    }
+}
 
     public func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
         guard let metadataObj = metadataObjects.first as? AVMetadataMachineReadableCodeObject, let stringValue = metadataObj.stringValue else {
