@@ -47,7 +47,7 @@ public class BarcodeScannerFragmentPlugin: CAPPlugin, AVCaptureMetadataOutputObj
             call.reject("Failed to set torch mode")
         }
     }
-    
+
     private func setupScanner() {
         print("⚡️ BarcodeScannerFragmentPlugin: setupScanner() called")
 
@@ -72,38 +72,35 @@ public class BarcodeScannerFragmentPlugin: CAPPlugin, AVCaptureMetadataOutputObj
             previewLayer?.videoGravity = .resizeAspectFill
 
             DispatchQueue.main.async {
-                if let webView = self.bridge?.webView {
-                    print("✅ WebView found, adding preview layer")
+                if let window = UIApplication.shared.windows.first {
+                    print("✅ Main window found, adding preview layer")
 
-                    // 🔥 Ensure WebView size is correct
-                    print("🟡 WebView size: \(webView.bounds.width)x\(webView.bounds.height)")
+                    // 🔥 Make sure the preview layer is on top
+                    self.previewLayer?.frame = window.bounds
 
-                    // 🚀 Fix: Explicitly set the preview layer frame
-                    self.previewLayer?.frame = CGRect(x: 0, y: 0, width: webView.bounds.width, height: webView.bounds.height)
-
-                    // Remove any previous layers to avoid duplicates
-                    webView.layer.sublayers?.forEach { layer in
+                    // Remove existing layers to prevent duplicates
+                    window.layer.sublayers?.forEach { layer in
                         if layer is AVCaptureVideoPreviewLayer {
                             layer.removeFromSuperlayer()
                         }
                     }
 
-                    // Insert the preview layer properly
-                    webView.layer.insertSublayer(self.previewLayer!, at: 0)
+                    // 🚀 Add preview layer directly to the window
+                    window.layer.insertSublayer(self.previewLayer!, at: 0)
 
-                    // 🔥 Force a redraw to ensure the layer is displayed
-                    webView.setNeedsLayout()
-                    webView.layoutIfNeeded()
+                    // 🔥 Force a UI update
+                    window.setNeedsLayout()
+                    window.layoutIfNeeded()
 
-                    print("✅ Preview Layer Added to WebView")
+                    print("✅ Preview Layer Added to Window")
                 } else {
-                    print("❌ WebView is nil!")
-                    self.notifyListeners("onBarcodeScannerErrorOccurred", data: ["message": "WebView is nil"])
+                    print("❌ Main window is nil!")
+                    self.notifyListeners("onBarcodeScannerErrorOccurred", data: ["message": "Main window is nil"])
                     return
                 }
             }
 
-            // 🚀 Run capture session in a background thread
+            // 🚀 Start capture session in a background thread
             DispatchQueue.global(qos: .userInitiated).async {
                 print("⚡️ Starting Camera Session on Background Thread...")
                 self.captureSession?.startRunning()
@@ -115,7 +112,7 @@ public class BarcodeScannerFragmentPlugin: CAPPlugin, AVCaptureMetadataOutputObj
             notifyListeners("onBarcodeScannerErrorOccurred", data: ["message": error.localizedDescription])
         }
     }
-
+    
     public func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
         guard let metadataObj = metadataObjects.first as? AVMetadataMachineReadableCodeObject, let stringValue = metadataObj.stringValue else {
             return
