@@ -71,19 +71,36 @@ public class BarcodeScannerFragmentPlugin: CAPPlugin, AVCaptureMetadataOutputObj
             previewLayer = AVCaptureVideoPreviewLayer(session: captureSession!)
             previewLayer?.videoGravity = .resizeAspectFill
 
-            if let webView = bridge?.webView {
-                print("✅ WebView found, adding preview layer")
+            DispatchQueue.main.async {
+                if let webView = self.bridge?.webView {
+                    print("✅ WebView found, adding preview layer")
 
-                DispatchQueue.main.async {
-                    self.previewLayer?.frame = webView.bounds
+                    // 🔥 Ensure WebView size is correct
+                    print("🟡 WebView size: \(webView.bounds.width)x\(webView.bounds.height)")
+
+                    // 🚀 Fix: Explicitly set the preview layer frame
+                    self.previewLayer?.frame = CGRect(x: 0, y: 0, width: webView.bounds.width, height: webView.bounds.height)
+
+                    // Remove any previous layers to avoid duplicates
+                    webView.layer.sublayers?.forEach { layer in
+                        if layer is AVCaptureVideoPreviewLayer {
+                            layer.removeFromSuperlayer()
+                        }
+                    }
+
+                    // Insert the preview layer properly
                     webView.layer.insertSublayer(self.previewLayer!, at: 0)
+
+                    // 🔥 Force a redraw to ensure the layer is displayed
                     webView.setNeedsLayout()
                     webView.layoutIfNeeded()
+
+                    print("✅ Preview Layer Added to WebView")
+                } else {
+                    print("❌ WebView is nil!")
+                    self.notifyListeners("onBarcodeScannerErrorOccurred", data: ["message": "WebView is nil"])
+                    return
                 }
-            } else {
-                print("❌ WebView is nil!")
-                notifyListeners("onBarcodeScannerErrorOccurred", data: ["message": "WebView is nil"])
-                return
             }
 
             // 🚀 Run capture session in a background thread
@@ -99,8 +116,6 @@ public class BarcodeScannerFragmentPlugin: CAPPlugin, AVCaptureMetadataOutputObj
         }
     }
 
-    
-    
     public func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
         guard let metadataObj = metadataObjects.first as? AVMetadataMachineReadableCodeObject, let stringValue = metadataObj.stringValue else {
             return
