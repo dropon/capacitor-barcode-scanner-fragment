@@ -11,18 +11,20 @@ public class BarcodeScannerFragmentPlugin: CAPPlugin, AVCaptureMetadataOutputObj
     
     @objc func startScanner(_ call: CAPPluginCall) {
         DispatchQueue.main.async {
+            print("⚡️ BarcodeScannerFragmentPlugin: Starting Scanner...")
             self.setupScanner()
         }
-        call.resolve()
+        call.resolve(["status": "started"])
     }
     
     @objc func stopScanner(_ call: CAPPluginCall) {
         DispatchQueue.main.async {
+            print("⚡️ BarcodeScannerFragmentPlugin: Stopping Scanner...")
             self.captureSession?.stopRunning()
             self.previewLayer?.removeFromSuperlayer()
             self.captureSession = nil
         }
-        call.resolve()
+        call.resolve(["status": "stopped"])
     }
     
     @objc func isScanning(_ call: CAPPluginCall) {
@@ -47,16 +49,20 @@ public class BarcodeScannerFragmentPlugin: CAPPlugin, AVCaptureMetadataOutputObj
     }
     
     private func setupScanner() {
+        print("⚡️ BarcodeScannerFragmentPlugin: setupScanner() called")
+
         guard let device = AVCaptureDevice.default(for: .video) else {
-            notifyListeners("onBarcodeScannerErrorOccurred", data: [:])
+            print("❌ No camera device found!")
+            notifyListeners("onBarcodeScannerErrorOccurred", data: ["message": "No camera device found"])
             return
         }
-        
+
         do {
+            print("✅ Camera device found, setting up input")
             let input = try AVCaptureDeviceInput(device: device)
             captureSession = AVCaptureSession()
             captureSession?.addInput(input)
-            
+
             let output = AVCaptureMetadataOutput()
             captureSession?.addOutput(output)
             output.setMetadataObjectsDelegate(self, queue: DispatchQueue.main)
@@ -64,14 +70,23 @@ public class BarcodeScannerFragmentPlugin: CAPPlugin, AVCaptureMetadataOutputObj
 
             previewLayer = AVCaptureVideoPreviewLayer(session: captureSession!)
             previewLayer?.videoGravity = .resizeAspectFill
+
             if let webView = bridge?.webView {
+                print("✅ WebView found, adding preview layer")
                 previewLayer?.frame = webView.bounds
                 webView.layer.insertSublayer(previewLayer!, at: 0)
+            } else {
+                print("❌ WebView is nil!")
+                notifyListeners("onBarcodeScannerErrorOccurred", data: ["message": "WebView is nil"])
+                return
             }
 
             captureSession?.startRunning()
+            print("✅ Camera session started successfully!")
+
         } catch {
-            notifyListeners("onBarcodeScannerErrorOccurred", data: [:])
+            print("❌ Failed to set up camera: \(error.localizedDescription)")
+            notifyListeners("onBarcodeScannerErrorOccurred", data: ["message": error.localizedDescription])
         }
     }
     
