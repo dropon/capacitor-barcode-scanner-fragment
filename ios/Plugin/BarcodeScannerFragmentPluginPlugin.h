@@ -1,10 +1,10 @@
-#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
+#import <Capacitor/Capacitor.h>
 
-//! Project version number for Plugin.
-FOUNDATION_EXPORT double PluginVersionNumber;
-
-//! Project version string for Plugin.
-FOUNDATION_EXPORT const unsigned char PluginVersionString[];
-
-// In this header, you should import all the public headers of your framework using statements like #import <Plugin/PublicHeader.h>
+CAP_PLUGIN(BarcodeScannerFragmentPlugin, "BarcodeScannerFragmentPlugin",
+    CAP_PLUGIN_METHOD(startScanner, CAPPluginReturnPromise);
+    CAP_PLUGIN_METHOD(stopScanner, CAPPluginReturnPromise);
+    CAP_PLUGIN_METHOD(isScanning, CAPPluginReturnPromise);
+    CAP_PLUGIN_METHOD(setIsTorchEnabled, CAPPluginReturnPromise);
+)
 
