@@ -23,8 +23,6 @@ export class BarcodeScannerFragmentPluginWeb
     this.scanButton.id = manualScanButtonId;
     this.scanButton.style.padding = '10px 15px';
     this.scanButton.style.border = 'none';
-    this.scanButton.style.borderRadius = '5px';
-    this.scanButton.style.backgroundColor = '#007bff';
     this.scanButton.style.color = 'white';
     this.scanButton.style.cursor = 'pointer';
     this.scanButton.onclick = () => {
