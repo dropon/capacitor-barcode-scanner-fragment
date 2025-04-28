@@ -15,7 +15,7 @@ export class BarcodeScannerFragmentPluginWeb
     this.scanButton.innerText = 'Scan Barcode';
     this.scanButton.style.position = 'fixed';
     this.scanButton.style.top = '10px';
-    this.scanButton.style.left = '10px';
+    this.scanButton.style.right = '10px';
     this.scanButton.style.zIndex = '9999';
     this.scanButton.style.padding = '10px 15px';
     this.scanButton.style.border = 'none';
@@ -30,7 +30,7 @@ export class BarcodeScannerFragmentPluginWeb
       }
     };
 
-    document.body.appendChild(this.scanButton);
+    document.getElementById('scan-plugins')?.appendChild(this.scanButton);
     this.isScanningActive = true;
   }
 
