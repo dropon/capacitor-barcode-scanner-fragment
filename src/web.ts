@@ -9,12 +9,12 @@ export class BarcodeScannerFragmentPluginWeb
   implements BarcodeScannerFragmentPluginPlugin
 {
   private isScanningActive = false;
-  private scanButton?: HTMLButtonElement;
+  private scanButton?: HTMLDivElement;
 
   async startScanner(): Promise<void> {
     if (this.isScanningActive) return;
 
-    this.scanButton = document.createElement('button');
+    this.scanButton = document.createElement('div');
     this.scanButton.id = manualScanButtonWrapperId;
     this.scanButton.style.padding = '10px 15px';
     this.scanButton.style.border = 'none';
