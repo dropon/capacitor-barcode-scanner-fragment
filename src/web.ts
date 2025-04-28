@@ -32,7 +32,7 @@ export class BarcodeScannerFragmentPluginWeb
       }
     };
 
-    document.getElementById('scan-plugins')?.appendChild(this.scanButton);
+    document.getElementById(manualScanButtonId)?.appendChild(this.scanButton);
     this.isScanningActive = true;
   }
 
