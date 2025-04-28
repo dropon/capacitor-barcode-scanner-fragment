@@ -12,11 +12,7 @@ export class BarcodeScannerFragmentPluginWeb
     if (this.isScanningActive) return;
 
     this.scanButton = document.createElement('button');
-    this.scanButton.innerText = 'Scan Barcode';
-    this.scanButton.style.position = 'fixed';
-    this.scanButton.style.top = '10px';
-    this.scanButton.style.right = '10px';
-    this.scanButton.style.zIndex = '9999';
+    this.scanButton.innerText = 'test';
     this.scanButton.style.padding = '10px 15px';
     this.scanButton.style.border = 'none';
     this.scanButton.style.borderRadius = '5px';
