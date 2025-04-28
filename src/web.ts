@@ -17,7 +17,11 @@ export class BarcodeScannerFragmentPluginWeb
     this.scanButton = document.createElement('div');
     this.scanButton.id = manualScanButtonWrapperId;
     this.scanButton.style.position = 'absolute';
-    this.scanButton.style.padding = '10px 15px';
+    this.scanButton.style.top = '0';
+    this.scanButton.style.bottom = '0';
+    this.scanButton.style.left = '0';
+    this.scanButton.style.right = '0';
+
     this.scanButton.style.border = 'none';
     this.scanButton.style.color = 'white';
     this.scanButton.style.cursor = 'pointer';
