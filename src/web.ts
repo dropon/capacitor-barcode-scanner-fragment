@@ -2,7 +2,7 @@ import { WebPlugin } from '@capacitor/core';
 
 import type { BarcodeScannerFragmentPluginPlugin } from './definitions';
 
-const manualScanButtonId = 'manual-scan-button';
+const manualScanButtonId = 'barcode-scanner-fragment-manual-input';
 
 export class BarcodeScannerFragmentPluginWeb
   extends WebPlugin
@@ -14,13 +14,13 @@ export class BarcodeScannerFragmentPluginWeb
   async startScanner(): Promise<void> {
     if (this.isScanningActive) return;
 
-    if (document.getElementById(manualScanButtonId)) {
-      return;
+    const element = document.getElementById(manualScanButtonId);
+    if (element) {
+      element.parentElement?.removeChild(element);
     }
 
     this.scanButton = document.createElement('button');
     this.scanButton.id = manualScanButtonId;
-    this.scanButton.innerText = 'test';
     this.scanButton.style.padding = '10px 15px';
     this.scanButton.style.border = 'none';
     this.scanButton.style.borderRadius = '5px';
