@@ -1,6 +1,6 @@
 {
   "name": "@droponio/capacitor-barcode-scanner-fragment",
-  "version": "3.0.36",
+  "version": "3.0.37",
   "description": "BarcodeScanner in Fragment",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",
