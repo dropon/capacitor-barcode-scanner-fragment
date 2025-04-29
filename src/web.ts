@@ -25,11 +25,6 @@ export class BarcodeScannerFragmentPluginWeb
   private scanButton?: HTMLDivElement;
 
   addManualInput(): void {
-    const el = document.getElementById(manualScanButtonId);
-    if (el) {
-      el.parentElement?.removeChild(el);
-    }
-
     this.scanButton = document.createElement('div');
     this.scanButton.id = manualScanButtonId;
     this.scanButton.style.position = 'absolute';
