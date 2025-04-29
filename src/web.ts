@@ -24,9 +24,7 @@ export class BarcodeScannerFragmentPluginWeb
   private isScanningActive = false;
   private scanButton?: HTMLDivElement;
 
-  async startScanner(): Promise<void> {
-    if (this.isScanningActive) return;
-
+  addManualInput(): void {
     const el = document.getElementById(manualScanButtonId);
     if (el) {
       el.parentElement?.removeChild(el);
@@ -50,14 +48,23 @@ export class BarcodeScannerFragmentPluginWeb
     document
       .getElementById(manualScanButtonWrapperId)
       ?.appendChild(this.scanButton);
-    this.isScanningActive = true;
   }
 
-  async stopScanner(): Promise<void> {
+  removeManualInput(): void {
     const el = document.getElementById(manualScanButtonId);
     if (el) {
       el.parentElement?.removeChild(el);
     }
+  }
+
+  async startScanner(): Promise<void> {
+    if (this.isScanningActive) return;
+
+    this.isScanningActive = true;
+  }
+
+  async stopScanner(): Promise<void> {
+    this.removeManualInput();
 
     this.isScanningActive = false;
   }
