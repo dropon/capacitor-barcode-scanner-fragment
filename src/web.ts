@@ -24,7 +24,7 @@ export class BarcodeScannerFragmentPluginWeb
   private isScanningActive = false;
   private scanButton?: HTMLDivElement;
 
-  addManualInput(): void {
+  addManualInput(onManualInput: () => void): void {
     this.scanButton = document.createElement('div');
     this.scanButton.id = manualScanButtonId;
     this.scanButton.style.position = 'absolute';
@@ -37,7 +37,7 @@ export class BarcodeScannerFragmentPluginWeb
     this.scanButton.style.color = 'white';
     this.scanButton.style.cursor = 'pointer';
     this.scanButton.onclick = () => {
-      this.notifyListeners('requestManualBarcodeInput', {});
+      onManualInput();
     };
 
     document
@@ -59,8 +59,6 @@ export class BarcodeScannerFragmentPluginWeb
   }
 
   async stopScanner(): Promise<void> {
-    this.removeManualInput();
-
     this.isScanningActive = false;
   }
 

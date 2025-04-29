@@ -1,7 +1,7 @@
 export interface BarcodeScannerFragmentPluginPlugin {
   toggleScanner(): Promise<void>;
   startScanner(): Promise<void>;
-  addManualInput(): void;
+  addManualInput(onManualInput: () => void): void;
   removeManualInput(): void;
   stopScanner(): Promise<void>;
   isScanning(): Promise<{ isScanning: boolean }>;
