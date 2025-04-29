@@ -39,10 +39,7 @@ export class BarcodeScannerFragmentPluginWeb
     this.scanButton.style.color = 'white';
     this.scanButton.style.cursor = 'pointer';
     this.scanButton.onclick = () => {
-      const code = window.prompt('Enter barcode value:');
-      if (code) {
-        this.notifyListeners('onBarcodeScanned', { value: code });
-      }
+      this.notifyListeners('requestManualBarcodeInput', {});
     };
 
     document
