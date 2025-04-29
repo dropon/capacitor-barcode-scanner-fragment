@@ -9,6 +9,18 @@ export class BarcodeScannerFragmentPluginWeb
   extends WebPlugin
   implements BarcodeScannerFragmentPluginPlugin
 {
+  constructor() {
+    super();
+
+    this.addListener('startScanner', () => {
+      this.startScanner();
+    });
+
+    this.addListener('stopScanner', () => {
+      this.stopScanner();
+    });
+  }
+
   private isScanningActive = false;
   private scanButton?: HTMLDivElement;
 
