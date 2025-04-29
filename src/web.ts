@@ -27,6 +27,11 @@ export class BarcodeScannerFragmentPluginWeb
   async startScanner(): Promise<void> {
     if (this.isScanningActive) return;
 
+    const el = document.getElementById(manualScanButtonId);
+    if (el) {
+      el.parentElement?.removeChild(el);
+    }
+
     this.scanButton = document.createElement('div');
     this.scanButton.id = manualScanButtonId;
     this.scanButton.style.position = 'absolute';
@@ -49,10 +54,11 @@ export class BarcodeScannerFragmentPluginWeb
   }
 
   async stopScanner(): Promise<void> {
-    if (this.scanButton) {
-      document.body.removeChild(this.scanButton);
-      this.scanButton = undefined;
+    const el = document.getElementById(manualScanButtonId);
+    if (el) {
+      el.parentElement?.removeChild(el);
     }
+
     this.isScanningActive = false;
   }
 
