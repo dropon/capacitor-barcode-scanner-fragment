@@ -46,8 +46,13 @@ export class BarcodeScannerFragmentPluginWeb
   }
 
   removeManualInput(): void {
-    const el = document.getElementById(manualScanButtonId);
-    if (el) {
+    const els = document.getElementsByClassName(manualScanButtonId);
+    for (let i = 0; i < els.length; i++) {
+      const el = els.item(i);
+      if (!el) {
+        continue;
+      }
+
       el.parentElement?.removeChild(el);
     }
   }
