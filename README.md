@@ -47,11 +47,12 @@ startScanner() => Promise<void>
 ### addManualInput(...)
 
 ```typescript
-addManualInput(onManualInput: () => void) => void
+addManualInput(el: any, onManualInput: () => void) => void
 ```
 
 | Param               | Type                       |
 | ------------------- | -------------------------- |
+| **`el`**            | <code>any</code>           |
 | **`onManualInput`** | <code>() =&gt; void</code> |
 
 --------------------
