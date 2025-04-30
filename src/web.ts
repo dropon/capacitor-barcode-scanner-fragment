@@ -24,7 +24,7 @@ export class BarcodeScannerFragmentPluginWeb
   private isScanningActive = false;
   private scanButton?: HTMLDivElement;
 
-  addManualInput(onManualInput: () => void): void {
+  addManualInput(wrapperEl: HTMLSpanElement, onManualInput: () => void): void {
     this.scanButton = document.createElement('div');
     this.scanButton.id = manualScanButtonId;
     this.scanButton.style.position = 'absolute';
@@ -40,10 +40,7 @@ export class BarcodeScannerFragmentPluginWeb
       onManualInput();
     };
 
-    const els = this.findAllWrappers();
-    els.forEach(el => {
-      el.parentElement?.appendChild(el);
-    });
+    wrapperEl.appendChild(this.scanButton);
   }
 
   removeManualInput(): void {
