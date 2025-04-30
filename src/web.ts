@@ -1,44 +1,66 @@
 import { WebPlugin } from '@capacitor/core';
+
 import type { BarcodeScannerFragmentPluginPlugin } from './definitions';
+
+const manualScanButtonWrapperId = 'barcode-scanner-fragment-manual-input';
+const manualScanButtonId = 'barcode-scanner-manual-input-button';
 
 export class BarcodeScannerFragmentPluginWeb
   extends WebPlugin
   implements BarcodeScannerFragmentPluginPlugin
 {
+  constructor() {
+    super();
+
+    this.addListener('startScanner', () => {
+      this.startScanner();
+    });
+
+    this.addListener('stopScanner', () => {
+      this.stopScanner();
+    });
+  }
+
   private isScanningActive = false;
-  private scanButton?: HTMLButtonElement;
+  private scanButton?: HTMLDivElement;
+
+  addManualInput(wrapperEl: HTMLSpanElement, onManualInput: () => void): void {
+    this.scanButton = document.createElement('div');
+    this.scanButton.id = manualScanButtonId;
+    this.scanButton.style.position = 'absolute';
+    this.scanButton.style.top = '0';
+    this.scanButton.style.bottom = '0';
+    this.scanButton.style.left = '0';
+    this.scanButton.style.right = '0';
+
+    this.scanButton.style.border = 'none';
+    this.scanButton.style.color = 'white';
+    this.scanButton.style.cursor = 'pointer';
+    this.scanButton.onclick = () => {
+      onManualInput();
+    };
+
+    wrapperEl.appendChild(this.scanButton);
+  }
+
+  removeManualInput(): void {
+    const els = this.findAllWrappers();
+    els.forEach(el => {
+      el.removeChild(el);
+    });
+  }
+
+  findAllWrappers(): NodeList {
+    return document.querySelectorAll('#' + manualScanButtonWrapperId);
+  }
 
   async startScanner(): Promise<void> {
     if (this.isScanningActive) return;
 
-    this.scanButton = document.createElement('button');
-    this.scanButton.innerText = 'Scan Barcode';
-    this.scanButton.style.position = 'fixed';
-    this.scanButton.style.top = '10px';
-    this.scanButton.style.left = '10px';
-    this.scanButton.style.zIndex = '9999';
-    this.scanButton.style.padding = '10px 15px';
-    this.scanButton.style.border = 'none';
-    this.scanButton.style.borderRadius = '5px';
-    this.scanButton.style.backgroundColor = '#007bff';
-    this.scanButton.style.color = 'white';
-    this.scanButton.style.cursor = 'pointer';
-    this.scanButton.onclick = () => {
-      const code = window.prompt('Enter barcode value:');
-      if (code) {
-        this.notifyListeners('onBarcodeScanned', { value: code });
-      }
-    };
-
-    document.body.appendChild(this.scanButton);
     this.isScanningActive = true;
   }
 
   async stopScanner(): Promise<void> {
-    if (this.scanButton) {
-      document.body.removeChild(this.scanButton);
-      this.scanButton = undefined;
-    }
     this.isScanningActive = false;
   }
 

@@ -15,6 +15,8 @@ npx cap sync
 
 * [`toggleScanner()`](#togglescanner)
 * [`startScanner()`](#startscanner)
+* [`addManualInput(...)`](#addmanualinput)
+* [`removeManualInput()`](#removemanualinput)
 * [`stopScanner()`](#stopscanner)
 * [`isScanning()`](#isscanning)
 * [`setIsTorchEnabled(...)`](#setistorchenabled)
@@ -37,6 +39,29 @@ toggleScanner() => Promise<void>
 
 ```typescript
 startScanner() => Promise<void>
+```
+
+--------------------
+
+
+### addManualInput(...)
+
+```typescript
+addManualInput(el: any, onManualInput: () => void) => void
+```
+
+| Param               | Type                       |
+| ------------------- | -------------------------- |
+| **`el`**            | <code>any</code>           |
+| **`onManualInput`** | <code>() =&gt; void</code> |
+
+--------------------
+
+
+### removeManualInput()
+
+```typescript
+removeManualInput() => void
 ```
 
 --------------------
