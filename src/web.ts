@@ -40,9 +40,15 @@ export class BarcodeScannerFragmentPluginWeb
       onManualInput();
     };
 
-    document
-      .getElementById(manualScanButtonWrapperId)
-      ?.appendChild(this.scanButton);
+    const els = document.getElementsByClassName(manualScanButtonWrapperId);
+    for (let i = 0; i < els.length; i++) {
+      const el = els.item(i);
+      if (!el) {
+        continue;
+      }
+
+      el.parentElement?.appendChild(el);
+    }
   }
 
   removeManualInput(): void {
