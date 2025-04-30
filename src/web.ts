@@ -40,27 +40,21 @@ export class BarcodeScannerFragmentPluginWeb
       onManualInput();
     };
 
-    const els = document.getElementsByClassName(manualScanButtonWrapperId);
-    for (let i = 0; i < els.length; i++) {
-      const el = els.item(i);
-      if (!el) {
-        continue;
-      }
-
+    const els = this.findAllWrappers();
+    els.forEach(el => {
       el.parentElement?.appendChild(el);
-    }
+    });
   }
 
   removeManualInput(): void {
-    const els = document.getElementsByClassName(manualScanButtonId);
-    for (let i = 0; i < els.length; i++) {
-      const el = els.item(i);
-      if (!el) {
-        continue;
-      }
+    const els = this.findAllWrappers();
+    els.forEach(el => {
+      el.removeChild(el);
+    });
+  }
 
-      el.parentElement?.removeChild(el);
-    }
+  findAllWrappers(): NodeList {
+    return document.querySelectorAll('#' + manualScanButtonWrapperId);
   }
 
   async startScanner(): Promise<void> {
