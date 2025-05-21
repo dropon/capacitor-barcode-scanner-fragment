@@ -48,6 +48,28 @@ public class BarcodeScannerFragmentPlugin: CAPPlugin, AVCaptureMetadataOutputObj
         }
     }
 
+    @objc func addManualInput(_ call: CAPPluginCall) {
+        DispatchQueue.main.async {
+            let alert = UIAlertController(title: "Manual Input", message: "Enter the barcode manually:", preferredStyle: .alert)
+            
+            alert.addTextField { textField in
+                textField.placeholder = "Barcode"
+            }
+            
+            alert.addAction(UIAlertAction(title: "Cancel", style: .cancel) { _ in
+                call.reject("User cancelled manual input")
+            })
+            
+            alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
+                let input = alert.textFields?.first?.text ?? ""
+                let result = ["barcode": input]
+                call.resolve(result)
+            })
+
+            self.bridge?.viewController?.present(alert, animated: true, completion: nil)
+        }
+    }
+
 
     private func setupScanner() {
         print("⚡️ BarcodeScannerFragmentPlugin: setupScanner() called")

@@ -20,5 +20,10 @@ public class BarcodeScannerFragmentPluginPlugin: CAPPlugin {
     @objc func setIsTorchEnabled(_ call: CAPPluginCall) {
         implementation.setIsTorchEnabled(call)
     }
+
+    @objc func addManualInput(_ call: CAPPluginCall) {
+        implementation.setIsTorchEnabled(call)
+    }
+
 }
 

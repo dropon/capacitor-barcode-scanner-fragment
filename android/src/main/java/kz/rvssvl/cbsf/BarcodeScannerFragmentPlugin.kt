@@ -11,10 +11,8 @@ import com.getcapacitor.PluginCall
 import com.getcapacitor.PluginMethod
 import com.getcapacitor.annotation.CapacitorPlugin
 
-
 @CapacitorPlugin(name = "BarcodeScannerFragmentPlugin")
 class BarcodeScannerFragmentPlugin : CustomPlugin() {
-
     private val implementation = BarcodeScannerFragmentHelper()
 
     private var fragment: BarcodeScannerFragment? = null
@@ -51,8 +49,8 @@ class BarcodeScannerFragmentPlugin : CustomPlugin() {
             fragment = null
         }
         fragment = BarcodeScannerFragment(BarcodeScannerFragmentPluginCallback(this))
-        val parent  = activity.findViewById<ViewGroup>(android.R.id.content) 
-        if (parent.id<=0) {
+        val parent = activity.findViewById<ViewGroup>(android.R.id.content)
+        if (parent.id <= 0) {
             parent.id = View.generateViewId()
         }
         fragmentManager.beginTransaction().add(parent.id, fragment!!, "barcode-scanner").commit()
@@ -77,44 +75,69 @@ class BarcodeScannerFragmentPlugin : CustomPlugin() {
         call.resolve(ret)
     }
 
+    @PluginMethod
+    fun addManualInput(call: PluginCall) {
+        val editText = android.widget.EditText(context)
+        editText.hint = "Enter barcode"
+
+        val dialog =
+            android.app.AlertDialog
+                .Builder(context)
+                .setTitle("Manual Input")
+                .setMessage("Enter the barcode manually:")
+                .setView(editText)
+                .setPositiveButton("OK") { _, _ ->
+                    val input = editText.text.toString()
+                    val ret = JSObject()
+                    ret.put("barcode", input)
+                    call.resolve(ret)
+                }.setNegativeButton("Cancel") { _, _ ->
+                    call.reject("User cancelled manual input")
+                }.create()
+
+        activity.runOnUiThread {
+            dialog.show()
+        }
+    }
+
     private fun requestPermission(): Boolean {
         if (ContextCompat.checkSelfPermission(
                 context,
-                Manifest.permission.CAMERA
+                Manifest.permission.CAMERA,
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             ActivityCompat.requestPermissions(
                 activity,
                 arrayOf(Manifest.permission.CAMERA),
-                0
+                0,
             )
             return false
         }
         return true
     }
 
-    class BarcodeScannerFragmentPluginCallback(var plugin: CustomPlugin): BarcodeScannerFragment.Callback {
-
+    class BarcodeScannerFragmentPluginCallback(
+        var plugin: CustomPlugin,
+    ) : BarcodeScannerFragment.Callback {
         override fun onBarcodeScannerCameraPermissionNotGranted() {
             if (ContextCompat.checkSelfPermission(
                     plugin.context,
-                    Manifest.permission.CAMERA
+                    Manifest.permission.CAMERA,
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
                 ActivityCompat.requestPermissions(
                     plugin.activity,
                     arrayOf(Manifest.permission.CAMERA),
-                    0
+                    0,
                 )
             }
         }
 
         override fun onBarcodeScannerPreviewClicked() {
-
         }
 
         override fun onBarcodeScannerBarcodeDetected(result: List<String>) {
-            plugin.emit("onBarcodeScanned", result[0]);
+            plugin.emit("onBarcodeScanned", result[0])
         }
 
         override fun onBarcodeScannerErrorOccurred() {
